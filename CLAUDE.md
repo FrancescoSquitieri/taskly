@@ -9,6 +9,7 @@ This file is the entry point for **Claude Code**. The full rule set lives in `.r
 Minimum loadout for every task:
 - `.rules/00-index.md`
 - `.rules/01-project.md`
+- `TODO.md` (root) — living backlog: current sprint, dependencies, what's already done
 
 Then load only the additional files relevant to the task. The index file gives concrete trigger examples.
 
@@ -19,6 +20,7 @@ Then load only the additional files relevant to the task. The index file gives c
 3. **No new dependencies without explicit user approval.** If a task seems to require a package not already listed in the rules, stop and ask before installing.
 4. **No `any`, no `console.log`, no commented-out code.** Use `unknown` + Zod, the structured logger, and delete dead code.
 5. **Multitenancy is a security boundary.** Every backend query scopes by `tenantId` from the session. Never accept `tenantId` from the client. Full rule: `.rules/07-auth-security.md`.
+6. **Living backlog in `TODO.md`.** The [TODO.md](TODO.md) file at the root tracks the state of every sprint and feature. **Before starting a new feature**: read `TODO.md` to identify the current sprint, dependencies (`blocked-by`), and what's already done. **When you complete and commit a feature**: flip the checkbox `[ ] → [x]` in the same merge commit and update the "Global status" counter at the top. Full conventions: [.rules/11-backlog.md](.rules/11-backlog.md).
 
 ## Claude Code specifics
 

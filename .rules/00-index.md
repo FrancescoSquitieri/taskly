@@ -7,13 +7,15 @@
 
 1. Identify what the task touches (frontend, backend, db, deploy, etc.).
 2. **Always** load `01-project.md` — it defines the monorepo, the shared packages contract, and the global naming conventions.
-3. Load the additional files matching the task. Do NOT load files unrelated to the task.
-4. If the task touches both frontend and backend (e.g. shared type, end-to-end feature), load both relevant files plus `01-project.md`.
+3. **Always** load `../TODO.md` (root) when the task is "starting work", "continuing a feature", or "what's next" — it shows the current sprint, completed features, and dependencies.
+4. Load the additional files matching the task. Do NOT load files unrelated to the task.
+5. If the task touches both frontend and backend (e.g. shared type, end-to-end feature), load both relevant files plus `01-project.md`.
 
 ## File map
 
 | File | When to load |
 |---|---|
+| `../TODO.md` | **ALWAYS when planning / starting / resuming a feature.** Living backlog: sprint state, dependencies (`blocked-by`), completed checkboxes. |
 | `01-project.md` | **ALWAYS.** Monorepo layout, shared packages, global conventions, stack overview. |
 | `02-servercn.md` | **ALWAYS when touching the backend (`apps/api`).** Mandatory consult of servercn docs before any backend change. |
 | `03-react.md` | Frontend tasks in `apps/web` (components, hooks, UI, client state, data fetching from UI). |
@@ -24,13 +26,16 @@
 | `08-devops.md` | Docker, CI/CD, GitHub Actions, AWS / IaC. |
 | `09-quality.md` | Biome, Husky, commits, linting, formatting, testing (Playwright + Jest). |
 | `10-mcp-skills.md` | MCP servers and skills available for richer output. |
+| `11-backlog.md` | Backlog conventions: how to update `TODO.md`, when to flip a checkbox, dependency tagging. Load with `TODO.md` when committing a completed feature. |
 
 ## Trigger examples
 
-- *"Add a new endpoint to create a task"* → `01`, `02`, `04`, `05`, `07` (because it touches multitenancy).
+- *"What should I work on now? / Continue from sprint N"* → `../TODO.md`, `01`, `11`.
+- *"I've finished feature X, commit it"* → `../TODO.md`, `11`, `09`.
+- *"Add a new endpoint to create a task"* → `../TODO.md`, `01`, `02`, `04`, `05`, `07` (because it touches multitenancy).
 - *"Fix a styling bug in the dashboard"* → `01`, `03`.
-- *"Set up a BullMQ job to send emails"* → `01`, `02`, `04`, `05`.
-- *"Add a real-time notification when a task is updated"* → `01`, `02`, `04`, `06`, `07`
+- *"Set up a BullMQ job to send emails"* → `../TODO.md`, `01`, `02`, `04`, `05`.
+- *"Add a real-time notification when a task is updated"* → `../TODO.md`, `01`, `02`, `04`, `06`, `07`
   (REST publishes the event, `apps/ws` re-emits it to the tenant room).
 - *"Update the Dockerfile"* → `01`, `08`.
 - *"Add a shared Zod schema for the Task entity"* → `01` (the schema lives in `/packages`).
