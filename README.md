@@ -70,14 +70,42 @@ and `worker` containers wait for it via `service_completed_successfully`.
 
 ```sh
 npm install
-npm run docker:infra:up    # postgres + redis + mailhog only
+npm run docker:infra:up                                 # postgres + redis + mailhog only
+
+# Copy env examples once (and tweak if needed)
+cp apps/api/.env.example apps/api/.env
+cp apps/ws/.env.example  apps/ws/.env
+cp apps/web/.env.example apps/web/.env
+
 npm exec --workspace=@taskly/api -- prisma generate
-npm exec --workspace=@taskly/api -- prisma migrate dev
-npm run dev                # turbo dev across every workspace
+npm exec --workspace=@taskly/api -- prisma migrate dev  # applies migrations under apps/api/prisma/migrations
+npm exec --workspace=@taskly/api -- prisma db seed      # loads the demo dataset
+
+npm run dev                                             # turbo dev across every workspace
 
 # In a separate terminal, optionally:
 npm exec --workspace=@taskly/api -- npm run worker:dev
 ```
+
+#### Demo accounts
+
+The seeder creates two tenants — **Acme Studio** (`acme-studio`) and **Northwind Labs** (`northwind-labs`) — with five cross-cutting users:
+
+| Email | Workspaces / role |
+|---|---|
+| `alice@taskly.dev` | Acme `OWNER`, Northwind `MEMBER` |
+| `bob@taskly.dev`   | Acme `MEMBER`, Northwind `OWNER` |
+| `carol@taskly.dev` | Acme `ADMIN` |
+| `dave@taskly.dev`  | Acme `MEMBER` |
+| `erin@taskly.dev`  | Northwind `MEMBER` |
+
+Password for every account: `Password123!`. To wipe and reload the demo data at any time:
+
+```sh
+npm exec --workspace=@taskly/api -- prisma db seed
+```
+
+API documentation (stub) is served at <http://localhost:4000/api/docs>; JSON spec at <http://localhost:4000/api/docs.json>. Full OpenAPI auto-gen from Zod ships in Sprint 12 — see [TODO.md](./TODO.md).
 
 Default ports:
 
@@ -128,6 +156,20 @@ Husky is installed via `npm run prepare`. Hooks:
 - `commit-msg`  → commitlint (Conventional Commits)
 - `pre-push`    → lint + typecheck + test on affected workspaces
 
+## CI
+
+Continuous integration runs on every push to `main` and every pull request via
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml). It performs `npm ci`,
+generates the Prisma client, then runs `turbo run lint check-types test` across
+the whole monorepo.
+
+## Roadmap
+
+The project follows a sprint-based backlog tracked in [`TODO.md`](./TODO.md).
+Each feature flips from `[ ]` to `[x]` in the same commit that ships it. See
+[`.rules/11-backlog.md`](./.rules/11-backlog.md) for the conventions and the
+project plan for the design rationale.
+
 ## Docker
 
 - `docker-compose.yml`       — **full stack**: postgres, redis, mailhog, migrate, api,
@@ -142,4 +184,3 @@ served by `nginx:alpine` (~30MB); `apps/api`, `apps/ws`, and the worker run on
 
 Container env values come from the compose file with sensible defaults; override them
 by copying `.env.docker.example` to `.env` and editing it.
-# taskly

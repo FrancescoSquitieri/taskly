@@ -1,6 +1,6 @@
 # Taskly — Living backlog
 
-> **Global status**: Sprint 0/12 · 4 features completed / ~110 total
+> **Global status**: Sprint 1/12 · 7 features completed / ~110 total
 > **Last updated**: 2026-05-17
 > **Concept**: Deep-work / Focus Tracker PM — see plan file `/Users/francescosquitieri/.claude/plans/adesso-leggi-tutto-il-twinkling-pillow.md`
 
@@ -31,9 +31,9 @@ Flip `[ ] → [x]` **in the same commit that merges the feature**. Update the "G
 - [x] Set up `prisma db seed` with a TS script: 2 tenants, 5 users, 3 projects, 50 tasks, **30 days of synthetic, "narratable" TimeEntry/FocusSession data** (broken streaks, variable estimation accuracy) — TimeEntry/FocusSession seeding deferred to Sprint 3/4 once their schemas exist; the rest is in place with 78 audit entries spanning 31 days
 - [x] Generate missing servercn components: `error-handler`, `async-handler`, `response-formatter`, `rbac` guard, `openapi` provider — via `npx servercn-cli add <name>` ([.rules/02-servercn.md](.rules/02-servercn.md)) — error-handler/async-handler/response-formatter already in tree; rbac and openapi added by hand because the servercn templates assume Mongoose+JWT (deviation logged in [.rules/02-servercn.md](.rules/02-servercn.md))
 - [x] CI baseline in `.github/workflows/ci.yml`: `lint`, `check-types`, `test` on PR + push to main
-- [ ] Verify Husky pre-commit + commit-msg + pre-push are working
-- [ ] Update [README.md](README.md) with definitive setup steps (Docker workflow + host workflow)
-- [ ] Create [TODO.md](TODO.md) (this file) + update [CLAUDE.md](CLAUDE.md), [.rules/00-index.md](.rules/00-index.md), create [.rules/11-backlog.md](.rules/11-backlog.md) — **in progress**
+- [x] Verify Husky pre-commit + commit-msg + pre-push are working (all three exercised live across the Sprint 0 commits and the push to `origin/main`)
+- [x] Update [README.md](README.md) with definitive setup steps (Docker workflow + host workflow)
+- [x] Create [TODO.md](TODO.md) (this file) + update [CLAUDE.md](CLAUDE.md), [.rules/00-index.md](.rules/00-index.md), create [.rules/11-backlog.md](.rules/11-backlog.md)
 
 ✅ **Acceptance**: `npm run dev` starts all services; login API endpoint returns 200 with a seed user; CI green on a test PR.
 🎬 **Demo**: "One-command setup — Docker up, sample data ready, CI passing."
