@@ -24,3 +24,19 @@ export const loginRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({ sendCommand, prefix: 'rl:login:' }),
 });
+
+export const forgotPasswordRateLimiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: RATE_LIMITS.FORGOT_PASSWORD_PER_HOUR,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  store: new RedisStore({ sendCommand, prefix: 'rl:forgot:' }),
+});
+
+export const registerRateLimiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: RATE_LIMITS.REGISTER_PER_HOUR,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  store: new RedisStore({ sendCommand, prefix: 'rl:register:' }),
+});

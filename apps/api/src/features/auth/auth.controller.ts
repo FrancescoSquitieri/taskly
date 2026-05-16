@@ -22,6 +22,10 @@ export const authController = {
   },
 
   async logout(req: Request, res: Response): Promise<Response> {
+    const { userId, tenantId } = req.session;
+    if (userId && tenantId) {
+      await authService.recordLogout(userId, tenantId);
+    }
     await new Promise<void>((resolve, reject) => {
       req.session.destroy((err) => (err ? reject(err) : resolve()));
     });
@@ -38,5 +42,25 @@ export const authController = {
       tenantId: req.user.tenantId,
       roles: req.user.roles,
     });
+  },
+
+  async forgotPassword(req: Request, res: Response): Promise<Response> {
+    await authService.forgotPassword(req.body);
+    return respondOk(res, { ok: true });
+  },
+
+  async resetPassword(req: Request, res: Response): Promise<Response> {
+    await authService.resetPassword(req.body);
+    return respondOk(res, { ok: true });
+  },
+
+  async switchTenant(req: Request, res: Response): Promise<Response> {
+    if (!req.user) {
+      throw ApiError.unauthorized();
+    }
+    const result = await authService.switchTenant(req.user.userId, req.body.tenantId);
+    req.session.tenantId = result.tenantId;
+    req.session.roles = [result.role];
+    return respondOk(res, { tenantId: result.tenantId, roles: [result.role] });
   },
 };

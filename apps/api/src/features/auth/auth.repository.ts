@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma.js';
 export const authRepository = {
   findUserByEmail: (email: string) => prisma.user.findUnique({ where: { email } }),
 
+  findUserById: (id: string) => prisma.user.findUnique({ where: { id } }),
+
   createUserWithTenant: async (params: {
     email: string;
     name: string;
@@ -37,4 +39,7 @@ export const authRepository = {
       where: { userId },
       orderBy: { createdAt: 'asc' },
     }),
+
+  updatePassword: (userId: string, passwordHash: string) =>
+    prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
 };
