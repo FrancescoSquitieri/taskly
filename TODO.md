@@ -1,6 +1,6 @@
 # Taskly — Living backlog
 
-> **Global status**: Sprint 1/12 · 7 features completed / ~110 total
+> **Global status**: Sprint 2/12 · 15 features completed / ~110 total
 > **Last updated**: 2026-05-17
 > **Concept**: Deep-work / Focus Tracker PM — see plan file `/Users/francescosquitieri/.claude/plans/adesso-leggi-tutto-il-twinkling-pillow.md`
 
@@ -43,14 +43,14 @@ Flip `[ ] → [x]` **in the same commit that merges the feature**. Update the "G
 ## Sprint 1 — Auth flow & Workspace bootstrap · ⏱️ M
 🎯 A real user can register, log in, create a workspace, and invite a teammate via email.
 
-- [ ] Pages `/login`, `/register`, `/forgot-password`, `/reset-password` (React Router v7)
-- [ ] `useAuth` hook + redirect logic (protected routes, guard component)
-- [ ] Workspace onboarding wizard (3 steps: workspace name, slug, invite teammates)
-- [ ] Email invites (BullMQ + Nodemailer + Mailhog dev) — `react-email` template or simple HTML `[new-dep: react-email optional, nodemailer already present]`
-- [ ] Accept-invite flow (link with signed short-lived JWT)
-- [ ] RBAC enforcement on sensitive endpoints (middleware `requireRole(['OWNER','ADMIN'])`)
-- [ ] Tenant switcher in topbar (Zustand store already present)
-- [ ] Audit log: `auth.login`, `auth.register`, `workspace.created`, `member.invited`, `member.joined` (written to DB; UI comes in Sprint 9)
+- [x] Pages `/login`, `/register`, `/forgot-password`, `/reset-password` (React Router v7)
+- [x] `useAuth` hook + redirect logic (protected routes, guard component)
+- [x] Workspace onboarding wizard (3 steps: workspace name, slug, invite teammates)
+- [x] Email invites (BullMQ + Nodemailer + Mailhog dev) — hand-curated HTML templates, no `react-email` needed
+- [x] Accept-invite flow (link with signed short-lived HMAC token — equivalent to a JWT, no new dep)
+- [x] RBAC enforcement on sensitive endpoints (middleware `requireRole(['OWNER','ADMIN'])` on `/workspaces/current/invites`)
+- [x] Tenant switcher in topbar (Zustand store already present; rendered with native `<select>` to avoid a new Radix dep)
+- [x] Audit log: `auth.login`, `auth.logout`, `auth.register`, `auth.password_reset_*`, `auth.tenant_switched`, `workspace.created`, `member.invited`, `member.joined` (written to DB; UI comes in Sprint 9)
 
 ✅ **Acceptance**: two different browsers → user A invites B → B receives email on Mailhog → clicks the link → B sees A's workspace in the switcher.
 🎬 **Demo**: "Sign up → workspace → email invite → collaborative join. All with an audit trail."
