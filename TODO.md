@@ -1,6 +1,6 @@
 # Taskly — Living backlog
 
-> **Global status**: Sprint 0/12 · 0 features completed / ~110 total
+> **Global status**: Sprint 0/12 · 1 feature completed / ~110 total
 > **Last updated**: 2026-05-16
 > **Concept**: Deep-work / Focus Tracker PM — see plan file `/Users/francescosquitieri/.claude/plans/adesso-leggi-tutto-il-twinkling-pillow.md`
 
@@ -27,7 +27,7 @@ Flip `[ ] → [x]` **in the same commit that merges the feature**. Update the "G
 ## Sprint 0 — Foundation completion · ⏱️ S
 🎯 Close the scaffold so we start with zero blockers.
 
-- [ ] First Prisma migration (`init`) on the dev DB
+- [x] First Prisma migration (`init`) on the dev DB
 - [ ] Set up `prisma db seed` with a TS script: 2 tenants, 5 users, 3 projects, 50 tasks, **30 days of synthetic, "narratable" TimeEntry/FocusSession data** (broken streaks, variable estimation accuracy)
 - [ ] Generate missing servercn components: `error-handler`, `async-handler`, `response-formatter`, `rbac` guard, `openapi` provider — via `npx servercn-cli add <name>` ([.rules/02-servercn.md](.rules/02-servercn.md))
 - [ ] CI baseline in `.github/workflows/ci.yml`: `lint`, `check-types`, `test` on PR + push to main
