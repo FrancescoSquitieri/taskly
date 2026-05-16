@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 
 import { env } from '@/config/env.js';
 import { EmailJobDataSchema } from '@/jobs/queues/email.queue.js';
+import { renderEmail } from '@/lib/email-templates.js';
 import { logger } from '@/lib/logger.js';
 import { redisQueueConnection } from '@/lib/redis.js';
 
@@ -17,12 +18,14 @@ export const emailWorker = new Worker(
   QUEUE_NAMES.EMAIL,
   async (job) => {
     const data = EmailJobDataSchema.parse(job.data);
-    logger.info({ jobId: job.id, template: data.template }, 'Sending email');
+    const { subject, html, text } = renderEmail(data.template, data.variables);
+    logger.info({ jobId: job.id, template: data.template, to: data.to }, 'Sending email');
     await transporter.sendMail({
       from: env.SMTP_FROM ?? 'no-reply@taskly.local',
       to: data.to,
-      subject: `[Taskly] ${data.template}`,
-      text: `Template ${data.template}\nVariables: ${JSON.stringify(data.variables)}`,
+      subject,
+      html,
+      text,
     });
   },
   { connection: redisQueueConnection, concurrency: 5 },
