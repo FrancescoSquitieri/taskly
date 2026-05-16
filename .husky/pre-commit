@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh" 2>/dev/null || true
+
+echo "▸ pre-commit: running lint-staged"
+npx lint-staged
+
+echo "▸ pre-commit: running typecheck on affected workspaces"
+npx turbo run check-types --filter=...[HEAD]

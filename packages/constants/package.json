@@ -1,0 +1,25 @@
+{
+  "name": "@repo/constants",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared constants (socket events, roles, queue names, error codes, limits)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./socket": "./src/socket.ts",
+    "./roles": "./src/roles.ts",
+    "./queues": "./src/queues.ts",
+    "./errors": "./src/errors.ts",
+    "./limits": "./src/limits.ts"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/config": "*",
+    "typescript": "5.7.3"
+  }
+}

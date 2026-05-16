@@ -1,0 +1,51 @@
+{
+  "name": "@taskly/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Taskly web client — React + Vite + shadcn/ui",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 5173",
+    "lint": "biome check .",
+    "check-types": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "clean": "rm -rf dist .turbo node_modules"
+  },
+  "dependencies": {
+    "@repo/constants": "*",
+    "@repo/schemas": "*",
+    "@repo/types": "*",
+    "@repo/ui": "*",
+    "@repo/utils": "*",
+    "@tanstack/react-query": "5.62.11",
+    "axios": "1.7.9",
+    "clsx": "2.1.1",
+    "lucide-react": "0.471.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "7.1.1",
+    "socket.io-client": "4.8.1",
+    "sonner": "1.7.1",
+    "tailwind-merge": "2.6.0",
+    "zod": "3.24.1",
+    "zustand": "5.0.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1",
+    "@repo/config": "*",
+    "@tanstack/react-query-devtools": "5.62.11",
+    "@types/node": "22.10.5",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "tailwindcss-animate": "1.0.7",
+    "typescript": "5.7.3",
+    "vite": "6.0.7"
+  }
+}

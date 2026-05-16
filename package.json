@@ -1,0 +1,56 @@
+{
+  "name": "taskly",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Taskly — multitenant task manager (Turborepo monorepo)",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "prepare": "husky",
+    "start": "npm run docker:up:build",
+    "stop": "npm run docker:down",
+    "docker:up": "docker compose up -d",
+    "docker:up:build": "docker compose up -d --build",
+    "docker:up:fg": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:down:volumes": "docker compose down -v",
+    "docker:restart": "docker compose restart",
+    "docker:logs": "docker compose logs -f --tail=200",
+    "docker:ps": "docker compose ps",
+    "docker:migrate": "docker compose run --rm migrate",
+    "docker:infra:up": "docker compose -f docker-compose.infra.yml up -d",
+    "docker:infra:down": "docker compose -f docker-compose.infra.yml down"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@commitlint/cli": "19.6.1",
+    "@commitlint/config-conventional": "19.6.0",
+    "@types/node": "22.10.5",
+    "husky": "9.1.7",
+    "lint-staged": "15.3.0",
+    "tsx": "4.19.2",
+    "turbo": "2.3.3",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  }
+}

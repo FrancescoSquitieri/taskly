@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-ssr
+.local
+.turbo
+playwright-report
+test-results
+.env
+.env.*
+!.env.example
