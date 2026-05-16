@@ -9,12 +9,13 @@
   "exports": {
     ".": "./src/index.ts",
     "./auth": "./src/auth.ts",
-    "./user": "./src/user.ts",
-    "./tenant": "./src/tenant.ts",
-    "./task": "./src/task.ts",
+    "./env": "./src/env.ts",
+    "./invite": "./src/invite.ts",
     "./project": "./src/project.ts",
     "./socket": "./src/socket.ts",
-    "./env": "./src/env.ts"
+    "./task": "./src/task.ts",
+    "./tenant": "./src/tenant.ts",
+    "./user": "./src/user.ts"
   },
   "scripts": {
     "lint": "biome check .",

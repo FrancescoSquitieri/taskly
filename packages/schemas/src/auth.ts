@@ -38,3 +38,19 @@ export const MeSchema = z.object({
   roles: z.array(z.string()),
 });
 export type Me = z.infer<typeof MeSchema>;
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email().toLowerCase(),
+});
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+
+export const ResetPasswordSchema = z.object({
+  token: z.string().min(1).max(2048),
+  password: PasswordSchema,
+});
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+
+export const SwitchTenantSchema = z.object({
+  tenantId: z.string().uuid(),
+});
+export type SwitchTenantInput = z.infer<typeof SwitchTenantSchema>;
