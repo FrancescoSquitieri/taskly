@@ -1,7 +1,7 @@
 # Taskly — Living backlog
 
-> **Global status**: Sprint 0/12 · 2 features completed / ~110 total
-> **Last updated**: 2026-05-16
+> **Global status**: Sprint 0/12 · 3 features completed / ~110 total
+> **Last updated**: 2026-05-17
 > **Concept**: Deep-work / Focus Tracker PM — see plan file `/Users/francescosquitieri/.claude/plans/adesso-leggi-tutto-il-twinkling-pillow.md`
 
 ## Conventions
@@ -29,7 +29,7 @@ Flip `[ ] → [x]` **in the same commit that merges the feature**. Update the "G
 
 - [x] First Prisma migration (`init`) on the dev DB
 - [x] Set up `prisma db seed` with a TS script: 2 tenants, 5 users, 3 projects, 50 tasks, **30 days of synthetic, "narratable" TimeEntry/FocusSession data** (broken streaks, variable estimation accuracy) — TimeEntry/FocusSession seeding deferred to Sprint 3/4 once their schemas exist; the rest is in place with 78 audit entries spanning 31 days
-- [ ] Generate missing servercn components: `error-handler`, `async-handler`, `response-formatter`, `rbac` guard, `openapi` provider — via `npx servercn-cli add <name>` ([.rules/02-servercn.md](.rules/02-servercn.md))
+- [x] Generate missing servercn components: `error-handler`, `async-handler`, `response-formatter`, `rbac` guard, `openapi` provider — via `npx servercn-cli add <name>` ([.rules/02-servercn.md](.rules/02-servercn.md)) — error-handler/async-handler/response-formatter already in tree; rbac and openapi added by hand because the servercn templates assume Mongoose+JWT (deviation logged in [.rules/02-servercn.md](.rules/02-servercn.md))
 - [ ] CI baseline in `.github/workflows/ci.yml`: `lint`, `check-types`, `test` on PR + push to main
 - [ ] Verify Husky pre-commit + commit-msg + pre-push are working
 - [ ] Update [README.md](README.md) with definitive setup steps (Docker workflow + host workflow)

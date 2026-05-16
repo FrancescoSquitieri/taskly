@@ -4,16 +4,18 @@ import cors from 'cors';
 import express, { type Express } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
+import swaggerUi from 'swagger-ui-express';
 
 import { env } from '@/config/env.js';
-import { logger } from '@/lib/logger.js';
-import { errorHandler, notFoundHandler } from '@/middleware/error-handler.js';
-import { globalRateLimiter } from '@/middleware/rate-limit.js';
-import { sessionMiddleware } from '@/middleware/session.js';
 import { authRouter } from '@/features/auth/auth.routes.js';
 import { healthRouter } from '@/features/health/health.routes.js';
 import { projectRouter } from '@/features/project/project.routes.js';
 import { taskRouter } from '@/features/task/task.routes.js';
+import { logger } from '@/lib/logger.js';
+import { openApiSpec } from '@/lib/openapi.js';
+import { errorHandler, notFoundHandler } from '@/middleware/error-handler.js';
+import { globalRateLimiter } from '@/middleware/rate-limit.js';
+import { sessionMiddleware } from '@/middleware/session.js';
 
 export const createApp = (): Express => {
   const app = express();
@@ -40,6 +42,11 @@ export const createApp = (): Express => {
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/tasks', taskRouter);
   app.use('/api/v1/projects', projectRouter);
+
+  app.get('/api/docs.json', (_req, res) => {
+    res.json(openApiSpec);
+  });
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
   app.use(notFoundHandler);
   app.use(errorHandler);

@@ -81,9 +81,21 @@ This means code is grouped by domain (e.g. `src/features/task/`, `src/features/a
 
 When servercn generators emit code, they respect this setting. Do not relocate generated files into a layer-based structure.
 
+## Pragmatic deviation (recorded 2026-05-17)
+
+Spot-checking `servercn-cli@2.0.5` against this codebase showed that several components emit **Mongoose + JWT + `dotenv-flow` + `cross-env`** scaffolds — none of which fit a Prisma + Postgres + stateful-Redis-sessions + Zod project. Running `add` on these components would:
+
+- silently install runtime deps in violation of hard rule #3 ([CLAUDE.md](../CLAUDE.md));
+- overwrite `src/server.ts` / `src/app.ts` with Mongoose-based equivalents;
+- import a non-existent `dotenv-flow/config` and `mongoose`/`jsonwebtoken` modules.
+
+Per the rule's own escape hatch (*"If servercn does not provide it: only then write it manually, and document the decision"*) the project considers the Mongoose-flavoured components as **not provided for our stack** and writes the cross-cutting pieces by hand when the generator output is incompatible. Components that ARE stack-neutral (e.g. status codes, http constants) can still be added directly.
+
+The Sprint 0 RBAC middleware (`apps/api/src/middleware/require-role.ts`) and the OpenAPI provider stub (`apps/api/src/lib/openapi.ts` mounted on `/api/docs` via `swagger-ui-express`) follow this pattern. If servercn ships Prisma-native variants later, regenerate them and adopt their shape.
+
 ## Components already required by the stack
 
-The following servercn components are part of the stack. If they are not already generated, generate them on first use:
+The following servercn components are part of the stack. If they are not already generated, generate them on first use (after verifying the emitted code is compatible with Prisma + Postgres + sessions):
 
 | Concern | servercn component | CLI |
 |---|---|---|
