@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 
+import { projectService } from '@/features/project/project.service.js';
 import { ApiError } from '@/lib/api-error.js';
 import { respondCreated, respondOk } from '@/lib/respond.js';
-import { projectService } from '@/features/project/project.service.js';
 
 const requireTenant = (req: Request): string => {
   if (!req.user) throw ApiError.unauthorized();

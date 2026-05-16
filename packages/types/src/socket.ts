@@ -19,14 +19,8 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  'project:join': (
-    payload: JoinProjectRoomPayload,
-    ack: (response: SocketAck) => void,
-  ) => void;
-  'project:leave': (
-    payload: JoinProjectRoomPayload,
-    ack: (response: SocketAck) => void,
-  ) => void;
+  'project:join': (payload: JoinProjectRoomPayload, ack: (response: SocketAck) => void) => void;
+  'project:leave': (payload: JoinProjectRoomPayload, ack: (response: SocketAck) => void) => void;
 }
 
 export interface InterServerEvents {

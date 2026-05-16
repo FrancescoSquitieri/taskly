@@ -1,6 +1,6 @@
+import { RATE_LIMITS } from '@repo/constants/limits';
 import rateLimit from 'express-rate-limit';
 import RedisStore, { type RedisReply } from 'rate-limit-redis';
-import { RATE_LIMITS } from '@repo/constants/limits';
 
 import { redis } from '@/lib/redis.js';
 

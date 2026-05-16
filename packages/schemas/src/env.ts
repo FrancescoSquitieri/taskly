@@ -13,7 +13,11 @@ export const ApiEnvSchema = SharedEnvSchema.extend({
   DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
   SESSION_SECRET: z.string().min(32),
-  SESSION_TTL_SECONDS: z.coerce.number().int().min(60).default(60 * 60 * 24 * 7),
+  SESSION_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(60)
+    .default(60 * 60 * 24 * 7),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().optional(),
   SMTP_USER: z.string().optional(),

@@ -1,12 +1,12 @@
-import type { Server } from 'socket.io';
-import { Redis } from 'ioredis';
-import { z } from 'zod';
 import { SOCKET_EVENTS, SOCKET_ROOMS } from '@repo/constants/socket';
 import {
   TaskCreatedEventSchema,
   TaskDeletedEventSchema,
   TaskUpdatedEventSchema,
 } from '@repo/schemas/socket';
+import { Redis } from 'ioredis';
+import type { Server } from 'socket.io';
+import { z } from 'zod';
 
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';

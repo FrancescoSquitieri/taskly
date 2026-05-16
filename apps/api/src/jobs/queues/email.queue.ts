@@ -1,6 +1,6 @@
+import { DEFAULT_JOB_OPTIONS, EMAIL_JOBS, QUEUE_NAMES } from '@repo/constants/queues';
 import { Queue } from 'bullmq';
 import { z } from 'zod';
-import { DEFAULT_JOB_OPTIONS, EMAIL_JOBS, QUEUE_NAMES } from '@repo/constants/queues';
 
 import { redisQueueConnection } from '@/lib/redis.js';
 

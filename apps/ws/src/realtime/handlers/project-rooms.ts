@@ -1,6 +1,6 @@
-import type { Server, Socket } from 'socket.io';
-import { JoinProjectRoomSchema } from '@repo/schemas/socket';
 import { SOCKET_EVENTS, SOCKET_ROOMS } from '@repo/constants/socket';
+import { JoinProjectRoomSchema } from '@repo/schemas/socket';
+import type { Server, Socket } from 'socket.io';
 
 import { logger } from '@/lib/logger.js';
 

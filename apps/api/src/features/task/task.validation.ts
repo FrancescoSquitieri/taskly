@@ -1,9 +1,5 @@
+import { CreateTaskSchema, TaskListQuerySchema, UpdateTaskSchema } from '@repo/schemas/task';
 import { z } from 'zod';
-import {
-  CreateTaskSchema,
-  TaskListQuerySchema,
-  UpdateTaskSchema,
-} from '@repo/schemas/task';
 
 export const createTaskBodySchema = CreateTaskSchema;
 export const updateTaskBodySchema = UpdateTaskSchema;

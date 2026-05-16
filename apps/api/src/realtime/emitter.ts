@@ -1,10 +1,6 @@
-import { Redis } from 'ioredis';
 import { SOCKET_EVENTS } from '@repo/constants/socket';
-import type {
-  TaskCreatedEvent,
-  TaskDeletedEvent,
-  TaskUpdatedEvent,
-} from '@repo/schemas/socket';
+import type { TaskCreatedEvent, TaskDeletedEvent, TaskUpdatedEvent } from '@repo/schemas/socket';
+import { Redis } from 'ioredis';
 
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';

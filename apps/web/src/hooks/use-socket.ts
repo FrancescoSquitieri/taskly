@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { toast } from '@repo/ui';
 import { SOCKET_EVENTS } from '@repo/constants/socket';
+import { toast } from '@repo/ui';
+import { useEffect } from 'react';
 
 import { getSocket } from '@/services/socket/socket-client';
 import { useSocketStore } from '@/stores/socket';

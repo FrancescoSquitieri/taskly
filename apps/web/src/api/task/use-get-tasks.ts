@@ -1,10 +1,10 @@
+import { type Task, type TaskListQuery, TaskSchema } from '@repo/schemas/task';
+import { toast } from '@repo/ui';
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
-import { toast } from '@repo/ui';
-import { TaskSchema, type TaskListQuery, type Task } from '@repo/schemas/task';
 
-import { apiClient } from '@/lib/axios';
 import { taskKeys } from '@/api/task/keys';
+import { apiClient } from '@/lib/axios';
 
 const TaskListResponseSchema = z.object({
   ok: z.literal(true),

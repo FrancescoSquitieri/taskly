@@ -1,21 +1,21 @@
 import type { Server as HttpServer } from 'node:http';
-import { Server } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
 import type {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
   SocketUserData,
 } from '@repo/types/socket';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { Server } from 'socket.io';
 
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
 import { pubClient, subClient } from '@/lib/redis.js';
 import { sessionMiddleware } from '@/middleware/session.js';
 import { socketAuth } from '@/middleware/socket-auth.js';
-import { joinDefaultRooms } from '@/realtime/rooms.js';
 import { registerProjectRoomHandlers } from '@/realtime/handlers/project-rooms.js';
 import { startRedisRelay } from '@/realtime/relay.js';
+import { joinDefaultRooms } from '@/realtime/rooms.js';
 
 export const createSocketServer = (
   httpServer: HttpServer,

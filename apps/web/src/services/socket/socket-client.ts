@@ -1,5 +1,5 @@
-import { io, type Socket } from 'socket.io-client';
 import type { ClientToServerEvents, ServerToClientEvents } from '@repo/types/socket';
+import { type Socket, io } from 'socket.io-client';
 
 import { env } from '@/lib/env';
 

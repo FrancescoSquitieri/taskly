@@ -1,5 +1,5 @@
-import { logger } from '@/lib/logger.js';
 import { emailWorker } from '@/jobs/workers/email.worker.js';
+import { logger } from '@/lib/logger.js';
 
 logger.info('Starting BullMQ workers');
 

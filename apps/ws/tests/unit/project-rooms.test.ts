@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import type { Server, Socket } from 'socket.io';
 import { SOCKET_EVENTS, SOCKET_ROOMS } from '@repo/constants/socket';
+import type { Server, Socket } from 'socket.io';
 
 import { registerProjectRoomHandlers } from '@/realtime/handlers/project-rooms.js';
 

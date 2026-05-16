@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
 import type { LoginInput, RegisterInput } from '@repo/schemas/auth';
 import { slugify } from '@repo/utils';
+import bcrypt from 'bcrypt';
 
-import { ApiError } from '@/lib/api-error.js';
 import { authRepository } from '@/features/auth/auth.repository.js';
+import { ApiError } from '@/lib/api-error.js';
 
 const BCRYPT_COST = 12;
 

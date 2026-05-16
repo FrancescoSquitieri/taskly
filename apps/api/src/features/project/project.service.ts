@@ -1,7 +1,7 @@
 import type { CreateProjectInput, Project } from '@repo/schemas/project';
 
-import { ApiError } from '@/lib/api-error.js';
 import { projectRepository } from '@/features/project/project.repository.js';
+import { ApiError } from '@/lib/api-error.js';
 
 export const projectService = {
   async list(tenantId: string): Promise<Project[]> {

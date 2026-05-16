@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
+import { authController } from '@/features/auth/auth.controller.js';
+import { loginBodySchema, registerBodySchema } from '@/features/auth/auth.validation.js';
 import { asyncHandler } from '@/middleware/async-handler.js';
 import { loginRateLimiter } from '@/middleware/rate-limit.js';
 import { validate } from '@/middleware/validate.js';
 import { verifyAuth } from '@/middleware/verify-auth.js';
-import { authController } from '@/features/auth/auth.controller.js';
-import { loginBodySchema, registerBodySchema } from '@/features/auth/auth.validation.js';
 
 const router: Router = Router();
 

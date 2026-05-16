@@ -1,19 +1,16 @@
+import { QUEUE_NAMES } from '@repo/constants/queues';
 import { Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
-import { QUEUE_NAMES } from '@repo/constants/queues';
 
 import { env } from '@/config/env.js';
+import { EmailJobDataSchema } from '@/jobs/queues/email.queue.js';
 import { logger } from '@/lib/logger.js';
 import { redisQueueConnection } from '@/lib/redis.js';
-import { EmailJobDataSchema } from '@/jobs/queues/email.queue.js';
 
 const transporter = nodemailer.createTransport({
   host: env.SMTP_HOST ?? 'localhost',
   port: env.SMTP_PORT ?? 1025,
-  auth:
-    env.SMTP_USER && env.SMTP_PASS
-      ? { user: env.SMTP_USER, pass: env.SMTP_PASS }
-      : undefined,
+  auth: env.SMTP_USER && env.SMTP_PASS ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
 });
 
 export const emailWorker = new Worker(

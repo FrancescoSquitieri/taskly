@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { asyncHandler } from '@/middleware/async-handler.js';
 import { prisma } from '@/lib/prisma.js';
 import { redis } from '@/lib/redis.js';
 import { respondOk } from '@/lib/respond.js';
+import { asyncHandler } from '@/middleware/async-handler.js';
 
 const router: Router = Router();
 

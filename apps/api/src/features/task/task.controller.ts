@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 
+import { taskService } from '@/features/task/task.service.js';
 import { ApiError } from '@/lib/api-error.js';
 import { respondCreated, respondOk, respondPaginated } from '@/lib/respond.js';
-import { taskService } from '@/features/task/task.service.js';
 
 const requireTenant = (req: Request): string => {
   if (!req.user) throw ApiError.unauthorized();
@@ -26,11 +26,7 @@ export const taskController = {
   },
 
   async update(req: Request, res: Response): Promise<Response> {
-    const task = await taskService.update(
-      requireTenant(req),
-      req.params.id as string,
-      req.body,
-    );
+    const task = await taskService.update(requireTenant(req), req.params.id as string, req.body);
     return respondOk(res, task);
   },
 

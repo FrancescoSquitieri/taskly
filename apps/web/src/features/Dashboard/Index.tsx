@@ -1,6 +1,6 @@
-import type { JSX } from 'react';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui';
 import { CheckCircle2 } from 'lucide-react';
+import type { JSX } from 'react';
 
 import { useSocket } from '@/hooks/use-socket';
 import { useSocketStore } from '@/stores/socket';
@@ -25,8 +25,8 @@ export const Dashboard = (): JSX.Element => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              This is the starter dashboard. Replace it with the real workspace once the auth
-              flow is wired up.
+              This is the starter dashboard. Replace it with the real workspace once the auth flow
+              is wired up.
             </p>
             <div className="flex gap-2">
               <Button>Primary action</Button>

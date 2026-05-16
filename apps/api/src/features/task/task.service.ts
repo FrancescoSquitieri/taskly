@@ -1,8 +1,8 @@
 import type { Task } from '@repo/schemas/task';
-import type { CreateTaskInput, UpdateTaskInput, TaskListQuery } from '@repo/schemas/task';
+import type { CreateTaskInput, TaskListQuery, UpdateTaskInput } from '@repo/schemas/task';
 
-import { ApiError } from '@/lib/api-error.js';
 import { taskRepository } from '@/features/task/task.repository.js';
+import { ApiError } from '@/lib/api-error.js';
 
 export const taskService = {
   async list(tenantId: string, query: TaskListQuery): Promise<{ items: Task[]; nextCursor: null }> {

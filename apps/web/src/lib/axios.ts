@@ -1,5 +1,5 @@
-import axios, { type AxiosInstance } from 'axios';
 import { toast } from '@repo/ui';
+import axios, { type AxiosInstance } from 'axios';
 
 import { env } from '@/lib/env';
 

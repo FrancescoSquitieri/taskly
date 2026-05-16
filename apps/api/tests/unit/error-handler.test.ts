@@ -29,9 +29,7 @@ describe('errorHandler', () => {
 
   it('renders ZodError as a 400', () => {
     const res = buildRes();
-    const zodError = new ZodError([
-      { code: 'custom', message: 'bad', path: ['title'] } as never,
-    ]);
+    const zodError = new ZodError([{ code: 'custom', message: 'bad', path: ['title'] } as never]);
     errorHandler(zodError, {} as never, res as never, jest.fn());
     expect(res.status).toHaveBeenCalledWith(400);
   });

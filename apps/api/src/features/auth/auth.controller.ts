@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 
+import { authService } from '@/features/auth/auth.service.js';
 import { ApiError } from '@/lib/api-error.js';
 import { respondCreated, respondOk } from '@/lib/respond.js';
-import { authService } from '@/features/auth/auth.service.js';
 
 export const authController = {
   async register(req: Request, res: Response): Promise<Response> {

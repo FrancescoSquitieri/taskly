@@ -1,4 +1,4 @@
-import * as React from 'react';
+import type * as React from 'react';
 import { Toaster as SonnerToaster, toast } from 'sonner';
 
 import { cn } from '../../lib/utils.js';

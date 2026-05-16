@@ -1,6 +1,6 @@
+import { type Me, MeSchema } from '@repo/schemas/auth';
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
-import { MeSchema, type Me } from '@repo/schemas/auth';
 
 import { apiClient } from '@/lib/axios';
 
