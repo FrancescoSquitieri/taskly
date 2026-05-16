@@ -54,10 +54,7 @@
         "noConsole": {
           "level": "error",
           "options": {
-            "allow": [
-              "warn",
-              "error"
-            ]
+            "allow": ["warn", "error"]
           }
         },
         "noExplicitAny": "error",
@@ -80,15 +77,8 @@
         "useSortedClasses": {
           "level": "warn",
           "options": {
-            "attributes": [
-              "class",
-              "className"
-            ],
-            "functions": [
-              "cn",
-              "clsx",
-              "cva"
-            ]
+            "attributes": ["class", "className"],
+            "functions": ["cn", "clsx", "cva"]
           }
         }
       }
@@ -96,12 +86,7 @@
   },
   "overrides": [
     {
-      "include": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.spec.ts",
-        "**/*.spec.tsx"
-      ],
+      "include": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -112,11 +97,17 @@
       }
     },
     {
-      "include": [
-        "**/*.config.ts",
-        "**/*.config.js",
-        "**/*.config.mjs"
-      ],
+      "include": ["**/*.config.ts", "**/*.config.js", "**/*.config.mjs"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": ["**/prisma/seed.ts"],
       "linter": {
         "rules": {
           "suspicious": {
