@@ -11,6 +11,7 @@ import { authRouter } from '@/features/auth/auth.routes.js';
 import { healthRouter } from '@/features/health/health.routes.js';
 import { projectRouter } from '@/features/project/project.routes.js';
 import { taskRouter } from '@/features/task/task.routes.js';
+import { tenantRouter } from '@/features/tenant/tenant.routes.js';
 import { logger } from '@/lib/logger.js';
 import { openApiSpec } from '@/lib/openapi.js';
 import { errorHandler, notFoundHandler } from '@/middleware/error-handler.js';
@@ -42,6 +43,7 @@ export const createApp = (): Express => {
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/tasks', taskRouter);
   app.use('/api/v1/projects', projectRouter);
+  app.use('/api/v1/workspaces', tenantRouter);
 
   app.get('/api/docs.json', (_req, res) => {
     res.json(openApiSpec);

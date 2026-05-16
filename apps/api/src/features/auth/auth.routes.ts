@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { authController } from '@/features/auth/auth.controller.js';
 import {
+  acceptInviteBodySchema,
   forgotPasswordBodySchema,
   loginBodySchema,
   registerBodySchema,
@@ -54,6 +55,12 @@ router.post(
   verifyAuth,
   validate({ body: switchTenantBodySchema }),
   asyncHandler(authController.switchTenant),
+);
+
+router.post(
+  '/accept-invite',
+  validate({ body: acceptInviteBodySchema }),
+  asyncHandler(authController.acceptInvite),
 );
 
 export const authRouter = router;

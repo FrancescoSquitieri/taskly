@@ -63,4 +63,16 @@ export const authController = {
     req.session.roles = [result.role];
     return respondOk(res, { tenantId: result.tenantId, roles: [result.role] });
   },
+
+  async acceptInvite(req: Request, res: Response): Promise<Response> {
+    const result = await authService.acceptInvite(req.body);
+    req.session.userId = result.userId;
+    req.session.tenantId = result.tenantId;
+    req.session.roles = result.roles;
+    return respondOk(res, {
+      userId: result.userId,
+      tenantId: result.tenantId,
+      createdAccount: result.createdAccount,
+    });
+  },
 };
