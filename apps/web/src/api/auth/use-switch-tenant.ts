@@ -1,9 +1,7 @@
+import { apiClient } from '@/lib/axios';
 import { toast } from '@repo/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
-
-import { authKeys } from '@/api/auth/keys';
-import { apiClient } from '@/lib/axios';
 
 const SwitchTenantResponseSchema = z.object({
   ok: z.literal(true),

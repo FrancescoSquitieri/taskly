@@ -23,9 +23,7 @@ export const RequireAuth = ({ children }: { children: ReactNode }): JSX.Element 
   return <>{children}</>;
 };
 
-export const RedirectIfAuthenticated = ({
-  children,
-}: { children: ReactNode }): JSX.Element => {
+export const RedirectIfAuthenticated = ({ children }: { children: ReactNode }): JSX.Element => {
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
     return (
