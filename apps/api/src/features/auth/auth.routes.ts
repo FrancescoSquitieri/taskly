@@ -6,14 +6,17 @@ import {
   forgotPasswordBodySchema,
   loginBodySchema,
   registerBodySchema,
+  resendVerificationBodySchema,
   resetPasswordBodySchema,
   switchTenantBodySchema,
+  verifyEmailBodySchema,
 } from '@/features/auth/auth.validation.js';
 import { asyncHandler } from '@/middleware/async-handler.js';
 import {
   forgotPasswordRateLimiter,
   loginRateLimiter,
   registerRateLimiter,
+  resendVerificationRateLimiter,
 } from '@/middleware/rate-limit.js';
 import { validate } from '@/middleware/validate.js';
 import { verifyAuth } from '@/middleware/verify-auth.js';
@@ -61,6 +64,19 @@ router.post(
   '/accept-invite',
   validate({ body: acceptInviteBodySchema }),
   asyncHandler(authController.acceptInvite),
+);
+
+router.post(
+  '/verify-email',
+  validate({ body: verifyEmailBodySchema }),
+  asyncHandler(authController.verifyEmail),
+);
+
+router.post(
+  '/resend-verification',
+  resendVerificationRateLimiter,
+  validate({ body: resendVerificationBodySchema }),
+  asyncHandler(authController.resendVerification),
 );
 
 export const authRouter = router;

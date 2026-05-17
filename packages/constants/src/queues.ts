@@ -9,6 +9,7 @@ export const EMAIL_JOBS = {
   SEND_WELCOME: 'send-welcome',
   SEND_PASSWORD_RESET: 'send-password-reset',
   SEND_INVITATION: 'send-invitation',
+  SEND_EMAIL_VERIFICATION: 'send-email-verification',
 } as const;
 export type EmailJobName = (typeof EMAIL_JOBS)[keyof typeof EMAIL_JOBS];
 

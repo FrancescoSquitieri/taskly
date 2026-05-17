@@ -3,7 +3,9 @@ import type {
   ForgotPasswordInput,
   LoginInput,
   RegisterInput,
+  ResendVerificationInput,
   ResetPasswordInput,
+  VerifyEmailInput,
 } from '@repo/schemas/auth';
 import type { AcceptInviteInput } from '@repo/schemas/invite';
 import { slugify } from '@repo/utils';
@@ -12,7 +14,11 @@ import bcrypt from 'bcrypt';
 import { env } from '@/config/env.js';
 import { authRepository } from '@/features/auth/auth.repository.js';
 import { tenantRepository } from '@/features/tenant/tenant.repository.js';
-import { enqueuePasswordResetEmail, enqueueWelcomeEmail } from '@/jobs/queues/email.queue.js';
+import {
+  enqueueEmailVerificationEmail,
+  enqueuePasswordResetEmail,
+  enqueueWelcomeEmail,
+} from '@/jobs/queues/email.queue.js';
 import { ApiError } from '@/lib/api-error.js';
 import { auditService } from '@/lib/audit.js';
 import { logger } from '@/lib/logger.js';
@@ -61,8 +67,93 @@ export const authService = {
       userName: user.name,
       workspaceName: tenant.name,
     });
+    await this.sendVerificationEmail({
+      userId: user.id,
+      tenantId: tenant.id,
+      email: user.email,
+      userName: user.name,
+    });
 
     return { userId: user.id, tenantId: tenant.id, roles: ['OWNER'] };
+  },
+
+  async sendVerificationEmail(params: {
+    userId: string;
+    tenantId: string;
+    email: string;
+    userName: string;
+  }): Promise<void> {
+    const token = tokenUtils.signEmailVerification(
+      { userId: params.userId, email: params.email },
+      TOKEN_TTL_SECONDS.EMAIL_VERIFICATION,
+    );
+    const verifyUrl = `${env.WEB_ORIGIN}/verify-email?token=${encodeURIComponent(token)}`;
+    await enqueueEmailVerificationEmail({
+      tenantId: params.tenantId,
+      to: params.email,
+      userName: params.userName,
+      verifyUrl,
+    });
+    await auditService.record({
+      tenantId: params.tenantId,
+      actorId: params.userId,
+      action: AUDIT_ACTIONS.AUTH_EMAIL_VERIFICATION_SENT,
+      target: params.userId,
+    });
+  },
+
+  async verifyEmail(input: VerifyEmailInput): Promise<{ alreadyVerified: boolean }> {
+    let payload: ReturnType<typeof tokenUtils.verifyEmailVerification>;
+    try {
+      payload = tokenUtils.verifyEmailVerification(input.token);
+    } catch (error) {
+      logger.warn({ err: error }, 'verify-email: invalid token');
+      throw ApiError.badRequest('Invalid or expired verification link');
+    }
+    const user = await authRepository.findUserById(payload.userId);
+    if (!user || user.email !== payload.email) {
+      throw ApiError.badRequest('Invalid or expired verification link');
+    }
+    if (user.emailVerifiedAt) {
+      return { alreadyVerified: true };
+    }
+    await authRepository.markEmailVerified(user.id);
+    const membership = await authRepository.findFirstMembershipForUser(user.id);
+    if (membership) {
+      await auditService.record({
+        tenantId: membership.tenantId,
+        actorId: user.id,
+        action: AUDIT_ACTIONS.AUTH_EMAIL_VERIFIED,
+        target: user.id,
+      });
+    }
+    return { alreadyVerified: false };
+  },
+
+  /**
+   * Always responds successfully (whether or not the email exists or is
+   * already verified) to avoid enumerating accounts.
+   */
+  async resendVerification(input: ResendVerificationInput): Promise<void> {
+    const user = await authRepository.findUserByEmail(input.email);
+    if (!user) {
+      logger.info({ email: input.email }, 'resend-verification: no user (silent success)');
+      return;
+    }
+    if (user.emailVerifiedAt) {
+      logger.info({ userId: user.id }, 'resend-verification: already verified (silent success)');
+      return;
+    }
+    const membership = await authRepository.findFirstMembershipForUser(user.id);
+    if (!membership) {
+      return;
+    }
+    await this.sendVerificationEmail({
+      userId: user.id,
+      tenantId: membership.tenantId,
+      email: user.email,
+      userName: user.name,
+    });
   },
 
   async login(input: LoginInput): Promise<AuthenticatedUser> {

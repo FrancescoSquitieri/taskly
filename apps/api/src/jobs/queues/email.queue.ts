@@ -7,7 +7,7 @@ import { redisQueueConnection } from '@/lib/redis.js';
 export const EmailJobDataSchema = z.object({
   tenantId: z.string().uuid(),
   to: z.string().email(),
-  template: z.enum(['welcome', 'password-reset', 'invitation']),
+  template: z.enum(['welcome', 'password-reset', 'invitation', 'email-verification']),
   variables: z.record(z.string(), z.unknown()).default({}),
 });
 export type EmailJobData = z.infer<typeof EmailJobDataSchema>;
@@ -64,4 +64,17 @@ export const enqueueInvitationEmail = (params: {
       role: params.role,
       acceptUrl: params.acceptUrl,
     },
+  });
+
+export const enqueueEmailVerificationEmail = (params: {
+  tenantId: string;
+  to: string;
+  userName: string;
+  verifyUrl: string;
+}) =>
+  enqueue(EMAIL_JOBS.SEND_EMAIL_VERIFICATION, {
+    tenantId: params.tenantId,
+    to: params.to,
+    template: 'email-verification',
+    variables: { userName: params.userName, verifyUrl: params.verifyUrl },
   });

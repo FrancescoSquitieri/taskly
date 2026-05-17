@@ -40,3 +40,11 @@ export const registerRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({ sendCommand, prefix: 'rl:register:' }),
 });
+
+export const resendVerificationRateLimiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: RATE_LIMITS.FORGOT_PASSWORD_PER_HOUR,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  store: new RedisStore({ sendCommand, prefix: 'rl:resend-verify:' }),
+});

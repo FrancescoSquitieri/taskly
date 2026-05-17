@@ -4,6 +4,7 @@ import type { JSX, ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useLogout } from '@/api/auth/use-logout';
+import { EmailVerificationBanner } from '@/components/email-verification-banner';
 import { TenantSwitcher } from '@/components/tenant-switcher';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -29,7 +30,7 @@ export const AppLayout = ({ children }: { children: ReactNode }): JSX.Element =>
           <div className="flex items-center gap-4">
             <TenantSwitcher />
             {user && (
-              <span className="text-sm text-muted-foreground" aria-label="signed-in user">
+              <span className="text-muted-foreground text-sm" aria-label="signed-in user">
                 {user.name}
               </span>
             )}
@@ -46,7 +47,10 @@ export const AppLayout = ({ children }: { children: ReactNode }): JSX.Element =>
           </div>
         </div>
       </header>
-      <main className="container py-8">{children}</main>
+      <main className="container space-y-4 py-8">
+        <EmailVerificationBanner />
+        {children}
+      </main>
     </div>
   );
 };

@@ -42,3 +42,12 @@ export const PasswordResetTokenPayloadSchema = z.object({
   exp: z.number().int(),
 });
 export type PasswordResetTokenPayload = z.infer<typeof PasswordResetTokenPayloadSchema>;
+
+export const EmailVerificationTokenPayloadSchema = z.object({
+  v: z.literal(1),
+  userId: z.string().uuid(),
+  email: z.string().email().toLowerCase(),
+  iat: z.number().int(),
+  exp: z.number().int(),
+});
+export type EmailVerificationTokenPayload = z.infer<typeof EmailVerificationTokenPayloadSchema>;

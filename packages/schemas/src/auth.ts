@@ -50,6 +50,16 @@ export const ResetPasswordSchema = z.object({
 });
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
+export const VerifyEmailSchema = z.object({
+  token: z.string().min(1).max(2048),
+});
+export type VerifyEmailInput = z.infer<typeof VerifyEmailSchema>;
+
+export const ResendVerificationSchema = z.object({
+  email: z.string().email().toLowerCase(),
+});
+export type ResendVerificationInput = z.infer<typeof ResendVerificationSchema>;
+
 export const SwitchTenantSchema = z.object({
   tenantId: z.string().uuid(),
 });

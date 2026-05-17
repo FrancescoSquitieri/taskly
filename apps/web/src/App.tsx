@@ -9,6 +9,7 @@ import { LoginPage } from '@/pages/login';
 import { OnboardingPage } from '@/pages/onboarding';
 import { RegisterPage } from '@/pages/register';
 import { ResetPasswordPage } from '@/pages/reset-password';
+import { VerifyEmailPage } from '@/pages/verify-email';
 
 export const App = (): JSX.Element => {
   return (
@@ -39,6 +40,7 @@ export const App = (): JSX.Element => {
       />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/accept-invite" element={<AcceptInvitePage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
 
       <Route
         path="/"

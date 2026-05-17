@@ -42,4 +42,10 @@ export const authRepository = {
 
   updatePassword: (userId: string, passwordHash: string) =>
     prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
+
+  markEmailVerified: (userId: string) =>
+    prisma.user.update({
+      where: { id: userId },
+      data: { emailVerifiedAt: new Date() },
+    }),
 };

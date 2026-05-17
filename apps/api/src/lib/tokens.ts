@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
 
 import {
+  type EmailVerificationTokenPayload,
+  EmailVerificationTokenPayloadSchema,
   type InviteTokenPayload,
   InviteTokenPayloadSchema,
   type PasswordResetTokenPayload,
@@ -86,6 +88,27 @@ export const tokenUtils = {
   verifyPasswordReset: (token: string): PasswordResetTokenPayload => {
     const parsed = verifyAndDecode(token);
     const data = PasswordResetTokenPayloadSchema.parse(parsed);
+    ensureNotExpired(data.exp);
+    return data;
+  },
+
+  signEmailVerification: (
+    payload: Omit<EmailVerificationTokenPayload, 'v' | 'iat' | 'exp'>,
+    ttlSeconds: number,
+  ): string => {
+    const now = Math.floor(Date.now() / 1000);
+    const full: EmailVerificationTokenPayload = {
+      v: 1,
+      ...payload,
+      iat: now,
+      exp: now + ttlSeconds,
+    };
+    return sign(full);
+  },
+
+  verifyEmailVerification: (token: string): EmailVerificationTokenPayload => {
+    const parsed = verifyAndDecode(token);
+    const data = EmailVerificationTokenPayloadSchema.parse(parsed);
     ensureNotExpired(data.exp);
     return data;
   },

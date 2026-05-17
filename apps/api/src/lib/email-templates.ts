@@ -25,7 +25,12 @@ const InvitationVarsSchema = z.object({
   acceptUrl: z.string().url(),
 });
 
-type TemplateKey = 'welcome' | 'password-reset' | 'invitation';
+const EmailVerificationVarsSchema = z.object({
+  userName: z.string().min(1),
+  verifyUrl: z.string().url(),
+});
+
+type TemplateKey = 'welcome' | 'password-reset' | 'invitation' | 'email-verification';
 
 export interface RenderedEmail {
   subject: string;
@@ -85,6 +90,20 @@ export const renderEmail = (template: TemplateKey, variables: unknown): Rendered
 <p style="font-size:13px;color:#6b7280;">Invitation link (expires in 7 days):<br/><span style="word-break:break-all;">${acceptUrl}</span></p>`,
         ),
         text: `${inviterName} invited you to ${workspaceName} (role: ${role}).\n\nAccept here: ${acceptUrl}\n(Link expires in 7 days.)\n`,
+      };
+    }
+    case 'email-verification': {
+      const { userName, verifyUrl } = EmailVerificationVarsSchema.parse(variables);
+      return {
+        subject: 'Confirm your Taskly email',
+        html: layout(
+          'Confirm your email',
+          `<h1 style="margin:0 0 16px;font-size:22px;">Hi ${userName},</h1>
+<p>Confirm this email address to finish setting up your Taskly account. The link expires in 24 hours.</p>
+<p>${button('Confirm email', verifyUrl)}</p>
+<p style="font-size:13px;color:#6b7280;">If the button does not work, copy this URL into your browser:<br/><span style="word-break:break-all;">${verifyUrl}</span></p>`,
+        ),
+        text: `Hi ${userName},\n\nConfirm your Taskly email: ${verifyUrl}\n(The link expires in 24 hours.)\n`,
       };
     }
   }
