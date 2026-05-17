@@ -9,8 +9,8 @@ import { redis } from '@/lib/redis.js';
 const app = createApp();
 const server = http.createServer(app);
 
-server.listen(env.PORT, () => {
-  logger.info({ port: env.PORT }, 'API listening');
+server.listen(env.API_PORT, () => {
+  logger.info({ port: env.API_PORT }, 'API listening');
 });
 
 const shutdown = async (signal: string): Promise<void> => {

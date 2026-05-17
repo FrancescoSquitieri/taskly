@@ -7,8 +7,11 @@ export const SharedEnvSchema = z.object({
 });
 export type SharedEnv = z.infer<typeof SharedEnvSchema>;
 
+// The root .env.<NODE_ENV> file is shared by every app, so each app reads its
+// own port (API_PORT vs WS_PORT) instead of a single PORT key that would
+// collide.
 export const ApiEnvSchema = SharedEnvSchema.extend({
-  PORT: z.coerce.number().int().min(1).max(65535).default(4000),
+  API_PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   WEB_ORIGIN: z.string().url(),
   DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
@@ -27,7 +30,7 @@ export const ApiEnvSchema = SharedEnvSchema.extend({
 export type ApiEnv = z.infer<typeof ApiEnvSchema>;
 
 export const WsEnvSchema = SharedEnvSchema.extend({
-  PORT: z.coerce.number().int().min(1).max(65535).default(4001),
+  WS_PORT: z.coerce.number().int().min(1).max(65535).default(4001),
   WEB_ORIGIN: z.string().url(),
   REDIS_URL: z.string().url(),
   SESSION_SECRET: z.string().min(32),

@@ -1,5 +1,5 @@
 process.env.NODE_ENV = 'test';
-process.env.PORT = process.env.PORT ?? '4099';
+process.env.API_PORT = process.env.API_PORT ?? '4099';
 process.env.WEB_ORIGIN = process.env.WEB_ORIGIN ?? 'http://localhost:5173';
 process.env.DATABASE_URL =
   process.env.DATABASE_URL ?? 'postgresql://taskly:taskly@localhost:5432/taskly_test?schema=public';

@@ -3,12 +3,24 @@ node_modules
 .pnp
 .pnp.js
 
-# Local env files
+# Environment files at the monorepo root.
+# Only `.env.sample` is tracked; everything else (legacy `.env.docker.example`,
+# per-env files, local overrides) stays out of git.
 .env
 .env.local
+.env.development
 .env.development.local
-.env.test.local
+.env.production
 .env.production.local
+.env.staging
+.env.staging.local
+.env.test
+.env.test.local
+.env.docker.example
+
+# Per-app legacy env files (superseded by the root .env.<env>).
+apps/*/.env
+apps/*/.env.*
 
 # Testing
 coverage
@@ -22,11 +34,14 @@ test-results
 # Vercel
 .vercel
 
-# Build Outputs
+# Build outputs
 .next/
 out/
 build
 dist
+
+# TypeScript incremental build cache
+*.tsbuildinfo
 
 # Logs
 npm-debug.log*
@@ -35,13 +50,16 @@ yarn-error.log*
 logs
 *.log
 
-# Misc
+# OS / Editor
 .DS_Store
 *.pem
 .idea
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# Claude Code local settings (per-user, not project-wide)
+.claude/settings.local.json
 
 # Prisma
 *.db

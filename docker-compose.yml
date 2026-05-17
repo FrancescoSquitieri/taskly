@@ -2,7 +2,11 @@ name: taskly
 
 # Full Taskly stack — infra + every app container.
 #
-# Up:        npm run docker:up
+# Drives all env from a single root file. By default this is `.env.production`;
+# point at staging with `docker compose --env-file .env.staging up` (or use the
+# scripted form `npm run docker:up:staging`).
+#
+# Up:        npm run docker:up        # uses .env.production
 # Up build:  npm run docker:up:build
 # Down:      npm run docker:down
 # Logs:      npm run docker:logs
@@ -10,31 +14,20 @@ name: taskly
 # For "infra-only" development (run apps on the host), use docker-compose.infra.yml
 # instead — see npm run docker:infra:up.
 
-x-app-env: &app-env
-  NODE_ENV: production
-  DATABASE_URL: postgresql://taskly:taskly@postgres:5432/taskly?schema=public
-  REDIS_URL: redis://redis:6379
-  SESSION_SECRET: ${SESSION_SECRET:-please-change-me-please-change-me-32+}
-  SESSION_TTL_SECONDS: 604800
-  WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:5173}
-  SMTP_HOST: mailhog
-  SMTP_PORT: 1025
-  SMTP_FROM: no-reply@taskly.local
-
 services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: taskly
-      POSTGRES_PASSWORD: taskly
-      POSTGRES_DB: taskly
+      POSTGRES_USER: ${POSTGRES_USER:-taskly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taskly}
+      POSTGRES_DB: ${POSTGRES_DB:-taskly}
     ports:
       - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U taskly -d taskly']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-taskly} -d ${POSTGRES_DB:-taskly}']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -67,8 +60,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      <<: *app-env
+    env_file:
+      - .env.production
     entrypoint: []
     working_dir: /app/apps/api
     command:
@@ -89,16 +82,15 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    environment:
-      <<: *app-env
-      PORT: 4000
+    env_file:
+      - .env.production
     ports:
-      - '4000:4000'
+      - '${API_PORT:-4000}:${API_PORT:-4000}'
     healthcheck:
       test:
         - CMD-SHELL
         - >-
-          wget -qO- http://127.0.0.1:4000/healthz | grep -q '"ok":true' || exit 1
+          wget -qO- http://127.0.0.1:${API_PORT:-4000}/healthz | grep -q '"ok":true' || exit 1
       interval: 10s
       timeout: 3s
       retries: 6
@@ -116,8 +108,8 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    environment:
-      <<: *app-env
+    env_file:
+      - .env.production
 
   ws:
     build:
@@ -127,12 +119,10 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    environment:
-      <<: *app-env
-      PORT: 4001
-      USE_SOCKET_REDIS_ADAPTER: 'true'
+    env_file:
+      - .env.production
     ports:
-      - '4001:4001'
+      - '${WS_PORT:-4001}:${WS_PORT:-4001}'
 
   web:
     build:

@@ -12,8 +12,8 @@ const server = http.createServer((_req, res) => {
 
 const io = createSocketServer(server);
 
-server.listen(env.PORT, () => {
-  logger.info({ port: env.PORT }, 'WS server listening');
+server.listen(env.WS_PORT, () => {
+  logger.info({ port: env.WS_PORT }, 'WS server listening');
 });
 
 const shutdown = async (signal: string): Promise<void> => {
