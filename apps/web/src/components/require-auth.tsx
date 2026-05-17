@@ -9,7 +9,7 @@ export const RequireAuth = ({ children }: { children: ReactNode }): JSX.Element 
 
   if (isLoading) {
     return (
-      <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
+      <div className="grid min-h-screen place-items-center text-muted-foreground text-sm">
         Checking session…
       </div>
     );
@@ -27,7 +27,7 @@ export const RedirectIfAuthenticated = ({ children }: { children: ReactNode }): 
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
     return (
-      <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
+      <div className="grid min-h-screen place-items-center text-muted-foreground text-sm">
         Checking session…
       </div>
     );

@@ -23,10 +23,10 @@ export const Dashboard = (): JSX.Element => {
       <div className="space-y-6">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="font-semibold text-2xl">
               Welcome back{user ? `, ${user.name.split(' ')[0]}` : ''}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Active workspace:{' '}
               <span className="font-medium text-foreground">{activeWorkspace?.name ?? '—'}</span> ·
               role <span className="font-medium text-foreground">{roles.join(', ') || '—'}</span>
@@ -91,9 +91,9 @@ export const Dashboard = (): JSX.Element => {
                   >
                     <span className="truncate">
                       {m.user.name}{' '}
-                      <span className="text-xs text-muted-foreground">— {m.user.email}</span>
+                      <span className="text-muted-foreground text-xs">— {m.user.email}</span>
                     </span>
-                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    <span className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
                       {m.role}
                     </span>
                   </li>

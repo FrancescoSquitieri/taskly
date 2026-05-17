@@ -1,32 +1,39 @@
-import { AcceptInviteSchema } from '@repo/schemas/invite';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type AcceptInviteInput, AcceptInviteSchema } from '@repo/schemas/invite';
 import { Button, Input, Label, toast } from '@repo/ui';
-import { type FormEvent, type JSX, useState } from 'react';
+import type { JSX } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAcceptInvite } from '@/api/auth/use-accept-invite';
 import { AuthPageShell } from '@/components/auth-page-shell';
+import { FieldError } from '@/components/field-error';
 
 export const AcceptInvitePage = (): JSX.Element => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const accept = useAcceptInvite();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const trimmedName = name.trim();
-    const parsed = AcceptInviteSchema.safeParse({
-      token,
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<AcceptInviteInput>({
+    resolver: zodResolver(AcceptInviteSchema),
+    defaultValues: { token, name: '', password: '' },
+    mode: 'onBlur',
+  });
+
+  const onSubmit = handleSubmit((values) => {
+    const trimmedName = values.name?.trim();
+    const payload: AcceptInviteInput = {
+      token: values.token,
       name: trimmedName || undefined,
-      password: password || undefined,
-    });
-    if (!parsed.success) {
-      toast.error(parsed.error.errors[0]?.message ?? 'Invalid input.');
-      return;
-    }
-    accept.mutate(parsed.data, {
+      password: values.password || undefined,
+    };
+    accept.mutate(payload, {
       onSuccess: (result) => {
         toast.success(
           result.createdAccount
@@ -35,8 +42,13 @@ export const AcceptInvitePage = (): JSX.Element => {
         );
         navigate('/', { replace: true });
       },
+      onError: (error) =>
+        setError('root', {
+          type: 'server',
+          message: error.message || 'Could not accept the invite.',
+        }),
     });
-  };
+  });
 
   if (!token) {
     return (
@@ -49,10 +61,12 @@ export const AcceptInvitePage = (): JSX.Element => {
           </Link>
         }
       >
-        <p className="text-sm text-muted-foreground">No token in the URL.</p>
+        <p className="text-muted-foreground text-sm">No token in the URL.</p>
       </AuthPageShell>
     );
   }
+
+  const submitting = accept.isPending || isSubmitting;
 
   return (
     <AuthPageShell
@@ -68,10 +82,12 @@ export const AcceptInvitePage = (): JSX.Element => {
         </span>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <input type="hidden" {...register('token')} />
         <div className="space-y-1.5">
           <Label htmlFor="name">Your name (new accounts)</Label>
-          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input id="name" aria-invalid={errors.name ? 'true' : undefined} {...register('name')} />
+          <FieldError message={errors.name?.message} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password">Password (new accounts)</Label>
@@ -79,15 +95,20 @@ export const AcceptInvitePage = (): JSX.Element => {
             id="password"
             type="password"
             autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={errors.password ? 'true' : undefined}
+            {...register('password')}
           />
-          <p className="text-xs text-muted-foreground">
-            Min 8 chars, one upper, one lower, one digit.
-          </p>
+          {errors.password ? (
+            <FieldError message={errors.password.message} />
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              Min 8 chars, one upper, one lower, one digit.
+            </p>
+          )}
         </div>
-        <Button type="submit" className="w-full" disabled={accept.isPending}>
-          {accept.isPending ? 'Joining…' : 'Accept invite'}
+        <FieldError message={errors.root?.message} />
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'Joining…' : 'Accept invite'}
         </Button>
       </form>
     </AuthPageShell>

@@ -1,5 +1,6 @@
-import { CreateInviteSchema } from '@repo/schemas/invite';
-import { CreateWorkspaceSchema } from '@repo/schemas/tenant';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type CreateInviteInput, CreateInviteSchema } from '@repo/schemas/invite';
+import { type CreateWorkspaceInput, CreateWorkspaceSchema } from '@repo/schemas/tenant';
 import {
   Button,
   Card,
@@ -9,68 +10,78 @@ import {
   CardTitle,
   Input,
   Label,
-  toast,
 } from '@repo/ui';
 import { CheckCircle2, Mail, Sparkles, Users } from 'lucide-react';
-import { type FormEvent, type JSX, useState } from 'react';
+import { type JSX, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useCreateInvite } from '@/api/workspace/use-create-invite';
 import { useCreateWorkspace } from '@/api/workspace/use-create-workspace';
 import { AppLayout } from '@/components/app-layout';
+import { FieldError } from '@/components/field-error';
 
 type Step = 'name' | 'invite' | 'done';
 
 export const OnboardingPage = (): JSX.Element => {
   const [step, setStep] = useState<Step>('name');
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceSlug, setWorkspaceSlug] = useState('');
-  const [inviteEmail, setInviteEmail] = useState('');
   const navigate = useNavigate();
   const createWorkspace = useCreateWorkspace();
   const createInvite = useCreateInvite();
 
-  const handleCreateWorkspace = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const parsed = CreateWorkspaceSchema.safeParse({
-      name: workspaceName,
-      slug: workspaceSlug || undefined,
-    });
-    if (!parsed.success) {
-      toast.error(parsed.error.errors[0]?.message ?? 'Invalid input.');
-      return;
-    }
-    createWorkspace.mutate(parsed.data, {
-      onSuccess: () => setStep('invite'),
-    });
-  };
+  const workspaceForm = useForm<CreateWorkspaceInput>({
+    resolver: zodResolver(CreateWorkspaceSchema),
+    defaultValues: { name: '', slug: undefined },
+    mode: 'onBlur',
+  });
 
-  const handleSendInvite = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const parsed = CreateInviteSchema.safeParse({ email: inviteEmail });
-    if (!parsed.success) {
-      toast.error(parsed.error.errors[0]?.message ?? 'Invalid input.');
-      return;
-    }
-    createInvite.mutate(parsed.data, {
-      onSuccess: () => {
-        setInviteEmail('');
-      },
+  const inviteForm = useForm<CreateInviteInput>({
+    resolver: zodResolver(CreateInviteSchema),
+    defaultValues: { email: '', role: 'MEMBER' },
+    mode: 'onBlur',
+  });
+
+  const handleCreateWorkspace = workspaceForm.handleSubmit((values) => {
+    const payload: CreateWorkspaceInput = {
+      name: values.name,
+      slug: values.slug || undefined,
+    };
+    createWorkspace.mutate(payload, {
+      onSuccess: () => setStep('invite'),
+      onError: (error) =>
+        workspaceForm.setError('root', {
+          type: 'server',
+          message: error.message || 'Could not create the workspace.',
+        }),
     });
-  };
+  });
+
+  const handleSendInvite = inviteForm.handleSubmit((values) => {
+    createInvite.mutate(values, {
+      onSuccess: () => inviteForm.reset({ email: '', role: 'MEMBER' }),
+      onError: (error) =>
+        inviteForm.setError('root', {
+          type: 'server',
+          message: error.message || 'Could not send the invite.',
+        }),
+    });
+  });
+
+  const workspaceSubmitting = createWorkspace.isPending || workspaceForm.formState.isSubmitting;
+  const inviteSubmitting = createInvite.isPending || inviteForm.formState.isSubmitting;
 
   return (
     <AppLayout>
       <div className="mx-auto max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-primary" aria-hidden />
-          <h1 className="text-2xl font-semibold">Set up your workspace</h1>
+          <h1 className="font-semibold text-2xl">Set up your workspace</h1>
         </div>
 
         <ol className="grid grid-cols-3 gap-2 text-xs uppercase tracking-wide">
-          <Step label="Workspace" active={step === 'name'} done={step !== 'name'} />
-          <Step label="Invite team" active={step === 'invite'} done={step === 'done'} />
-          <Step label="Done" active={step === 'done'} done={step === 'done'} />
+          <StepIndicator label="Workspace" active={step === 'name'} done={step !== 'name'} />
+          <StepIndicator label="Invite team" active={step === 'invite'} done={step === 'done'} />
+          <StepIndicator label="Done" active={step === 'done'} done={step === 'done'} />
         </ol>
 
         {step === 'name' && (
@@ -85,22 +96,24 @@ export const OnboardingPage = (): JSX.Element => {
                   <Label htmlFor="ws-name">Workspace name</Label>
                   <Input
                     id="ws-name"
-                    required
-                    value={workspaceName}
-                    onChange={(e) => setWorkspaceName(e.target.value)}
+                    aria-invalid={workspaceForm.formState.errors.name ? 'true' : undefined}
+                    {...workspaceForm.register('name')}
                   />
+                  <FieldError message={workspaceForm.formState.errors.name?.message} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="ws-slug">Slug (optional)</Label>
                   <Input
                     id="ws-slug"
                     placeholder="auto-derived from the name"
-                    value={workspaceSlug}
-                    onChange={(e) => setWorkspaceSlug(e.target.value.toLowerCase())}
+                    aria-invalid={workspaceForm.formState.errors.slug ? 'true' : undefined}
+                    {...workspaceForm.register('slug')}
                   />
+                  <FieldError message={workspaceForm.formState.errors.slug?.message} />
                 </div>
-                <Button type="submit" className="w-full" disabled={createWorkspace.isPending}>
-                  {createWorkspace.isPending ? 'Creating…' : 'Create workspace'}
+                <FieldError message={workspaceForm.formState.errors.root?.message} />
+                <Button type="submit" className="w-full" disabled={workspaceSubmitting}>
+                  {workspaceSubmitting ? 'Creating…' : 'Create workspace'}
                 </Button>
               </form>
             </CardContent>
@@ -122,18 +135,16 @@ export const OnboardingPage = (): JSX.Element => {
                   <Input
                     id="invite-email"
                     type="email"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
+                    aria-invalid={inviteForm.formState.errors.email ? 'true' : undefined}
+                    {...inviteForm.register('email')}
                   />
+                  <FieldError message={inviteForm.formState.errors.email?.message} />
                 </div>
+                <FieldError message={inviteForm.formState.errors.root?.message} />
                 <div className="flex gap-2">
-                  <Button
-                    type="submit"
-                    disabled={createInvite.isPending || inviteEmail.length === 0}
-                    className="flex-1 gap-2"
-                  >
+                  <Button type="submit" disabled={inviteSubmitting} className="flex-1 gap-2">
                     <Mail className="h-4 w-4" aria-hidden />
-                    {createInvite.isPending ? 'Sending…' : 'Send invite'}
+                    {inviteSubmitting ? 'Sending…' : 'Send invite'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setStep('done')}>
                     Skip
@@ -158,14 +169,14 @@ export const OnboardingPage = (): JSX.Element => {
               <Button onClick={() => navigate('/', { replace: true })} className="w-full">
                 Go to dashboard
               </Button>
-              <Link to="/" className="block text-center text-sm text-muted-foreground underline">
+              <Link to="/" className="block text-center text-muted-foreground text-sm underline">
                 Or browse the team
               </Link>
             </CardContent>
           </Card>
         )}
 
-        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+        <p className="flex items-center gap-2 text-muted-foreground text-xs">
           <Users className="h-3.5 w-3.5" aria-hidden /> Roles are scoped per workspace — invites
           land as <span className="font-medium">MEMBER</span> by default.
         </p>
@@ -174,7 +185,7 @@ export const OnboardingPage = (): JSX.Element => {
   );
 };
 
-const Step = ({
+const StepIndicator = ({
   label,
   active,
   done,

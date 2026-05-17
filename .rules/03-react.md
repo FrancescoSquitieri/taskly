@@ -105,6 +105,17 @@ Do NOT implement optimistic updates for: payments, irreversible deletes (use a c
 - For purely UI-local validation (e.g. a form's confirm-password field), define the schema in the feature folder's `Types.ts`.
 - Derive TypeScript types from Zod schemas via `z.infer<typeof Schema>`. Never duplicate type definitions manually.
 
+## Forms
+
+- All forms MUST use **react-hook-form** with the **`@hookform/resolvers/zod`** resolver. Never wire forms with raw `useState` + manual `onSubmit` parsing.
+- The resolver schema MUST come from `@repo/schemas` whenever a shared entity is involved. If a form needs UI-only fields (e.g. `confirm` password), extend the shared schema locally with `.extend(...).refine(...)`. Never redefine the canonical schema.
+- Display per-field validation errors **inline** under each input using `<FieldError message={errors.<field>?.message} />` from `@/components/field-error`. Toasts are reserved for unexpected/global errors.
+- Cross-cutting or backend errors that do not map to a specific field set `errors.root` via `setError('root', { type: 'server', message })` and render with the same `FieldError` component.
+- Backend errors that DO map to a field (e.g. `409` "email already exists" → `email` field) MUST call `setError('<field>', { type: 'server', message })` so the message shows next to the offending input.
+- Set `mode: 'onBlur'` (or stricter) so the user sees the validation feedback without having to submit first.
+- Each input MUST set `aria-invalid={errors.<field> ? 'true' : undefined}` for accessibility.
+- Disable the submit button while the mutation is pending OR `formState.isSubmitting` is true.
+
 ## Component Rules
 
 - **Maximum 250 lines per component file.** If a file approaches this limit, extract sub-components immediately.
@@ -188,6 +199,7 @@ Biome handles the sorting automatically — do not fight it.
 - `axios`
 - `zustand`
 - `zod`
+- `react-hook-form` + `@hookform/resolvers` (zod resolver)
 - `socket.io-client`
 - `lucide-react`
 - `sonner` (consumed via shadcn `@/components/ui/sonner`)

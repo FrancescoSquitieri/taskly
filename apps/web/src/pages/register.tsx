@@ -1,34 +1,47 @@
-import { RegisterSchema } from '@repo/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type RegisterInput, RegisterSchema } from '@repo/schemas/auth';
 import { Button, Input, Label, toast } from '@repo/ui';
-import { type FormEvent, type JSX, useState } from 'react';
+import type { JSX } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useRegister } from '@/api/auth/use-register';
 import { AuthPageShell } from '@/components/auth-page-shell';
+import { FieldError } from '@/components/field-error';
 
 export const RegisterPage = (): JSX.Element => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [tenantName, setTenantName] = useState('');
   const navigate = useNavigate();
   const register = useRegister();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const parsed = RegisterSchema.safeParse({ name, email, password, tenantName });
-    if (!parsed.success) {
-      const firstError = parsed.error.errors[0]?.message ?? 'Invalid input';
-      toast.error(firstError);
-      return;
-    }
-    register.mutate(parsed.data, {
+  const {
+    register: rhfRegister,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: { name: '', email: '', password: '', tenantName: '' },
+    mode: 'onBlur',
+  });
+
+  const onSubmit = handleSubmit((values) => {
+    register.mutate(values, {
       onSuccess: () => {
-        toast.success(`Welcome, ${parsed.data.name}!`);
+        toast.success(`Welcome, ${values.name}! Check your email to confirm the account.`);
         navigate('/', { replace: true });
       },
+      onError: (error) => {
+        const message = error.message || 'Could not create the account.';
+        if (/already exists/i.test(message)) {
+          setError('email', { type: 'server', message });
+          return;
+        }
+        setError('root', { type: 'server', message });
+      },
     });
-  };
+  });
+
+  const submitting = register.isPending || isSubmitting;
 
   return (
     <AuthPageShell
@@ -43,16 +56,16 @@ export const RegisterPage = (): JSX.Element => {
         </span>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div className="space-y-1.5">
           <Label htmlFor="name">Your name</Label>
           <Input
             id="name"
             autoComplete="name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            aria-invalid={errors.name ? 'true' : undefined}
+            {...rhfRegister('name')}
           />
+          <FieldError message={errors.name?.message} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="email">Work email</Label>
@@ -60,10 +73,10 @@ export const RegisterPage = (): JSX.Element => {
             id="email"
             type="email"
             autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={errors.email ? 'true' : undefined}
+            {...rhfRegister('email')}
           />
+          <FieldError message={errors.email?.message} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
@@ -71,25 +84,29 @@ export const RegisterPage = (): JSX.Element => {
             id="password"
             type="password"
             autoComplete="new-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={errors.password ? 'true' : undefined}
+            {...rhfRegister('password')}
           />
-          <p className="text-xs text-muted-foreground">
-            Min 8 chars, one upper, one lower, one digit.
-          </p>
+          {errors.password ? (
+            <FieldError message={errors.password.message} />
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              Min 8 chars, one upper, one lower, one digit.
+            </p>
+          )}
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="tenantName">Workspace name</Label>
           <Input
             id="tenantName"
-            required
-            value={tenantName}
-            onChange={(e) => setTenantName(e.target.value)}
+            aria-invalid={errors.tenantName ? 'true' : undefined}
+            {...rhfRegister('tenantName')}
           />
+          <FieldError message={errors.tenantName?.message} />
         </div>
-        <Button type="submit" className="w-full" disabled={register.isPending}>
-          {register.isPending ? 'Creating workspace…' : 'Create account'}
+        <FieldError message={errors.root?.message} />
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'Creating workspace…' : 'Create account'}
         </Button>
       </form>
     </AuthPageShell>

@@ -27,7 +27,7 @@ export const AuthPageShell = ({
       </CardHeader>
       <CardContent>{children}</CardContent>
       {footer && (
-        <CardFooter className="flex-col items-start gap-2 text-sm text-muted-foreground">
+        <CardFooter className="flex-col items-start gap-2 text-muted-foreground text-sm">
           {footer}
         </CardFooter>
       )}

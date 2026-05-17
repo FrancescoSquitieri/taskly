@@ -1,32 +1,47 @@
-import { LoginSchema } from '@repo/schemas/auth';
-import { Button, Input, Label, toast } from '@repo/ui';
-import { type FormEvent, type JSX, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type LoginInput, LoginSchema } from '@repo/schemas/auth';
+import { Button, Input, Label } from '@repo/ui';
+import type { JSX } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useLogin } from '@/api/auth/use-login';
 import { AuthPageShell } from '@/components/auth-page-shell';
+import { FieldError } from '@/components/field-error';
 
 export const LoginPage = (): JSX.Element => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const login = useLogin();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const parsed = LoginSchema.safeParse({ email, password });
-    if (!parsed.success) {
-      toast.error('Please enter a valid email and password.');
-      return;
-    }
-    login.mutate(parsed.data, {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: { email: '', password: '' },
+    mode: 'onBlur',
+  });
+
+  const onSubmit = handleSubmit((values) => {
+    login.mutate(values, {
       onSuccess: () => {
         const next = searchParams.get('next');
         navigate(next?.startsWith('/') ? next : '/', { replace: true });
       },
+      onError: (error) => {
+        // Map common backend errors to a useful inline state.
+        setError('root', {
+          type: 'server',
+          message: error.message || 'Invalid email or password.',
+        });
+      },
     });
-  };
+  });
+
+  const submitting = login.isPending || isSubmitting;
 
   return (
     <AuthPageShell
@@ -46,17 +61,17 @@ export const LoginPage = (): JSX.Element => {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
             autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            aria-invalid={errors.email ? 'true' : undefined}
+            {...register('email')}
           />
+          <FieldError message={errors.email?.message} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
@@ -64,13 +79,14 @@ export const LoginPage = (): JSX.Element => {
             id="password"
             type="password"
             autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={errors.password ? 'true' : undefined}
+            {...register('password')}
           />
+          <FieldError message={errors.password?.message} />
         </div>
-        <Button type="submit" className="w-full" disabled={login.isPending}>
-          {login.isPending ? 'Signing in…' : 'Sign in'}
+        <FieldError message={errors.root?.message} />
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? 'Signing in…' : 'Sign in'}
         </Button>
       </form>
     </AuthPageShell>
